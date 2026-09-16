@@ -14,7 +14,9 @@ O projeto nasceu como uma ferramenta pessoal de estudo e foi reorganizado para d
 - Sessões curtas priorizam fortemente os kanjis aprendidos mais recentemente.
 - Sem repetição dentro de uma sessão/ciclo.
 - Botão **“Não sei”** revela a resposta, mas ainda exige que o aluno digite uma leitura válida.
-- Após o acerto, exibe todas as leituras cadastradas e os significados em português.
+- Após o acerto, exibe cada leitura em uma lista com kana/katakana, romaji e contexto de uso.
+- Leituras com usos diferentes podem trazer exemplos individuais.
+- `Enter` confirma a resposta e, após o acerto, avança para o próximo kanji.
 - Estatísticas e seleção persistidas no `localStorage`.
 - Interface mobile-first com tema claro/escuro.
 
@@ -26,7 +28,8 @@ kanjis-garden/
 ├── css/
 │   └── styles.css
 ├── data/
-│   └── kanjis.js
+│   ├── kanjis.js
+│   └── reading-details.js
 ├── js/
 │   ├── storage.js
 │   ├── game.js
@@ -38,9 +41,13 @@ kanjis-garden/
 
 Fonte de dados do currículo. Cada entrada informa livro, capítulo, ordem, leituras aceitas, forma de exibição e significados.
 
+### `data/reading-details.js`
+
+Complementos por pronúncia: contexto de uso e exemplos para leituras que precisam de distinção adicional. Quando não existe um detalhe específico, a interface identifica automaticamente kun'yomi/on'yomi e mostra o significado do kanji.
+
 ### `js/game.js`
 
-Regras independentes da interface: normalização de kana/romaji, validação de respostas e sorteio com peso por recência.
+Regras independentes da interface: normalização de kana/romaji, validação de respostas, romanização para exibição e sorteio com peso por recência.
 
 ### `js/storage.js`
 
