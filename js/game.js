@@ -43,6 +43,10 @@
     return out;
   }
 
+  function displayReadingToRomaji(value) {
+    return kanaToRomaji(value.replace(/[～〜]/g, ""));
+  }
+
   function normalizeRoman(value) {
     return value
       .toLowerCase()
@@ -100,5 +104,11 @@
     return weightedSample(selected, Math.min(requested, selected.length));
   }
 
-  window.KanjiGardenGame = { readingMatches, makeSession, weightedSample };
+  window.KanjiGardenGame = {
+    readingMatches,
+    makeSession,
+    weightedSample,
+    kanaToRomaji,
+    displayReadingToRomaji
+  };
 })();
