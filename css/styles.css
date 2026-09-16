@@ -163,11 +163,24 @@ button:disabled { cursor: not-allowed; opacity: .38; }
 }
 #answerInput:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
 .answer-actions, .result-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-.feedback { min-height: 28px; margin: 18px 0; line-height: 1.6; }
+.feedback { min-height: 28px; margin: 18px 0; line-height: 1.5; }
 .feedback.good { color: var(--good); }
 .feedback.bad { color: var(--bad); }
-.feedback .reading-list { color: var(--text); font-weight: 800; }
-.feedback .meaning-list { color: var(--muted); }
+.feedback-title { margin-bottom: 12px; font-size: 1.05rem; font-weight: 750; }
+.reading-cards { display: grid; gap: 9px; text-align: left; }
+.reading-card {
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  color: var(--text);
+  background: rgba(255,255,255,.025);
+}
+.reading-main { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+.reading-kana { font-family: "Noto Serif JP", "Yu Mincho", serif; font-size: 1.3rem; font-weight: 800; }
+.reading-romaji { color: var(--accent-strong); font-size: .92rem; font-weight: 800; letter-spacing: .02em; }
+.reading-usage { margin-top: 5px; color: var(--muted); font-size: .89rem; }
+.reading-example { margin-top: 5px; color: var(--text); font-size: .84rem; opacity: .86; }
+.kanji-meaning-summary { margin-top: 12px; color: var(--muted); font-size: .83rem; }
 .hidden { display: none !important; }
 
 .result-card { padding: 38px; text-align: center; }
@@ -186,4 +199,5 @@ button:disabled { cursor: not-allowed; opacity: .38; }
   .mode-card { min-height: 136px; padding: 17px; }
   .kanji-card { padding: 24px 18px; }
   .answer-actions, .result-actions { grid-template-columns: 1fr; }
+  .reading-main { align-items: flex-start; flex-direction: column; gap: 1px; }
 }
