@@ -2,6 +2,7 @@
   "use strict";
 
   const data = window.KANJI_GARDEN_DATA;
+  const readingDetails = window.KANJI_GARDEN_READING_DETAILS || {};
   const storage = window.KanjiGardenStorage;
   const game = window.KanjiGardenGame;
   const byId = new Map(data.kanjis.map(item => [item.id, item]));
@@ -119,8 +120,50 @@
     setTimeout(() => $("#answerInput").focus(), 30);
   }
 
+  function defaultReadingUsage(item, displayReading) {
+    const isOnyomi = /[\u30A1-\u30FA]/.test(displayReading);
+    const isVariant = /[～〜]/.test(displayReading);
+    const hasOkurigana = /[（(]/.test(displayReading);
+
+    if (isVariant) {
+      return `Variação fonética usada em compostos ou contagens · ${item.meanings.join(" · ")}`;
+    }
+    if (isOnyomi) {
+      return `On'yomi · comum em palavras compostas · ${item.meanings.join(" · ")}`;
+    }
+    if (hasOkurigana) {
+      return `Kun'yomi · usada com okurigana · ${item.meanings.join(" · ")}`;
+    }
+    return `Kun'yomi · leitura japonesa nativa · ${item.meanings.join(" · ")}`;
+  }
+
+  function getReadingDetail(item, displayReading) {
+    return readingDetails[item.id]?.[displayReading] || {};
+  }
+
   function showAnswer(item, prefix) {
-    $("#feedback").innerHTML = `${prefix}<div class="reading-list">${item.displayReadings.join(" · ")}</div><div class="meaning-list">${item.meanings.join(" · ")}</div>`;
+    const cards = item.displayReadings.map((displayReading, index) => {
+      const detail = getReadingDetail(item, displayReading);
+      const sourceReading = item.readings[index] || displayReading;
+      const romaji = game.displayReadingToRomaji(sourceReading);
+      const usage = detail.usage || defaultReadingUsage(item, displayReading);
+      const example = detail.example ? `<div class="reading-example">${detail.example}</div>` : "";
+
+      return `
+        <div class="reading-card">
+          <div class="reading-main">
+            <span class="reading-kana" lang="ja">${displayReading}</span>
+            <span class="reading-romaji">${romaji}</span>
+          </div>
+          <div class="reading-usage">${usage}</div>
+          ${example}
+        </div>`;
+    }).join("");
+
+    $("#feedback").innerHTML = `
+      <div class="feedback-title">${prefix}</div>
+      <div class="reading-cards">${cards}</div>
+      <div class="kanji-meaning-summary">Significados: ${item.meanings.join(" · ")}</div>`;
   }
 
   function submitAnswer() {
@@ -202,6 +245,13 @@
   $("#nextKanji").addEventListener("click", nextQuestion);
   $("#backHome").addEventListener("click", () => { updateHome(); showView("homeView"); });
   $("#repeatSession").addEventListener("click", () => startSession(session?.mode || "10"));
+
+  document.addEventListener("keydown", event => {
+    if (event.key !== "Enter" || event.repeat) return;
+    if (!session || !session.resolved || !$("#gameView").classList.contains("active")) return;
+    event.preventDefault();
+    nextQuestion();
+  });
 
   applyTheme();
   updateHome();
