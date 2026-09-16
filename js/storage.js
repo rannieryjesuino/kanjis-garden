@@ -5,7 +5,8 @@
   const DEFAULT_STATE = {
     selectedIds: null,
     stats: { answered: 0, correct: 0 },
-    theme: "dark"
+    theme: "dark",
+    activeSession: null
   };
 
   function load() {
@@ -19,7 +20,8 @@
           answered: Number(parsed.stats?.answered || 0),
           correct: Number(parsed.stats?.correct || 0)
         },
-        theme: parsed.theme === "light" ? "light" : "dark"
+        theme: parsed.theme === "light" ? "light" : "dark",
+        activeSession: parsed.activeSession && typeof parsed.activeSession === "object" ? parsed.activeSession : null
       };
     } catch {
       return structuredClone(DEFAULT_STATE);
