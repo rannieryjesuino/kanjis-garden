@@ -3,49 +3,80 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#121016">
+  <meta name="theme-color" content="#171218">
   <meta name="description" content="Kanjis Garden — treino de leitura dos kanjis do New Progressive 1 e 2.">
   <title>Kanjis Garden</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <div class="petals" aria-hidden="true"></div>
+  <div id="petalField" class="petal-field" aria-hidden="true"></div>
+  <div class="bg-branch branch-one" aria-hidden="true"></div>
+  <div class="bg-branch branch-two" aria-hidden="true"></div>
 
   <main class="app-shell">
-    <header class="hero">
-      <div>
-        <p class="eyebrow">漢字の庭</p>
-        <h1>Kanjis Garden</h1>
-        <p class="subtitle">Treine as leituras dos kanjis do New Progressive 1 e 2.</p>
-      </div>
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Kanjis Garden">
+        <span class="brand-mark" lang="ja">漢</span>
+        <span>Kanji Garden</span>
+      </a>
       <button id="themeToggle" class="icon-button" type="button" aria-label="Alternar tema">☾</button>
     </header>
 
     <section id="homeView" class="view active" aria-labelledby="homeTitle">
-      <div class="panel intro-panel">
+      <div class="home-hero">
+        <p class="hero-kicker">Hanami Study</p>
+        <h1 id="homeTitle">Kanji Garden</h1>
+        <p class="hero-japanese" lang="ja">漢字の庭</p>
+        <p class="hero-copy">Treine as leituras dos kanjis do curso, escolhendo o conteúdo e favorecendo o que foi visto mais recentemente.</p>
+      </div>
+
+      <section id="resumeCard" class="panel resume-card hidden" aria-label="Continuar treino">
         <div>
-          <p class="section-kicker">Seu jardim</p>
-          <h2 id="homeTitle">Escolha como treinar</h2>
-          <p id="selectionSummary" class="muted"></p>
+          <p class="card-title">Continuar treino</p>
+          <p id="resumeMeta" class="muted compact"></p>
         </div>
-        <button id="openSelection" class="secondary-button" type="button">Selecionar kanjis</button>
+        <button id="continueTraining" class="primary-button resume-button" type="button">Continuar</button>
+      </section>
+
+      <button id="openSelection" class="panel select-card" type="button">
+        <span class="select-icon" lang="ja">選</span>
+        <span class="select-copy">
+          <strong>Selecionar kanjis</strong>
+          <small>Escolha quais entram nas sessões</small>
+        </span>
+        <span class="select-count"><strong id="selectionCount">0</strong><small>de 100</small></span>
+      </button>
+
+      <div class="section-heading">
+        <h2>Escolha uma sessão</h2>
+        <span id="selectionSummary" class="muted"></span>
       </div>
 
       <div class="mode-grid" aria-label="Modos de treino">
         <button class="mode-card" type="button" data-mode="10">
-          <strong>10</strong><span>kanjis</span><small>Foco rápido nos mais recentes</small>
+          <span class="mode-symbol" lang="ja">花</span>
+          <strong>10 kanjis</strong>
+          <small>Foco rápido nos mais recentes</small>
         </button>
         <button class="mode-card" type="button" data-mode="20">
-          <strong>20</strong><span>kanjis</span><small>Revisão intermediária</small>
+          <span class="mode-symbol" lang="ja">桜</span>
+          <strong>20 kanjis</strong>
+          <small>Revisão intermediária</small>
         </button>
         <button class="mode-card" type="button" data-mode="30">
-          <strong>30</strong><span>kanjis</span><small>Revisão longa</small>
+          <span class="mode-symbol" lang="ja">月</span>
+          <strong>30 kanjis</strong>
+          <small>Revisão longa</small>
         </button>
         <button class="mode-card" type="button" data-mode="full">
-          <strong>全</strong><span>Completo</span><small>Todos os selecionados, sem repetir</small>
+          <span class="mode-symbol" lang="ja">全</span>
+          <strong>Completo</strong>
+          <small>Todos os selecionados, sem repetir</small>
         </button>
         <button class="mode-card wide" type="button" data-mode="infinite">
-          <strong>∞</strong><span>Infinito</span><small>Ciclos sem repetição, sempre priorizando os mais recentes</small>
+          <span class="mode-symbol">∞</span>
+          <strong>Infinito</strong>
+          <small>Ciclos sem repetição, sempre priorizando os mais recentes</small>
         </button>
       </div>
 
@@ -120,6 +151,7 @@
   <script src="data/reading-details.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/game.js"></script>
+  <script src="js/petals.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
