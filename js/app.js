@@ -30,12 +30,50 @@
     return state.selectedIds.map(id => byId.get(id)).filter(Boolean);
   }
 
+  function modeLabel(mode) {
+    if (mode === "full") return "completa";
+    if (mode === "infinite") return "infinita";
+    return `de ${mode}`;
+  }
+
+  function saveSessionSnapshot(options = {}) {
+    if (!session) return;
+    const nextIndex = options.nextIndex ?? session.index;
+    if (nextIndex >= session.queue.length && session.mode !== "infinite") {
+      state.activeSession = null;
+    } else {
+      state.activeSession = {
+        mode: session.mode,
+        queueIds: session.queue.map(item => item.id),
+        index: nextIndex,
+        correct: session.correct,
+        answered: session.answered
+      };
+    }
+    persist();
+  }
+
+  function updateResumeCard() {
+    const card = $("#resumeCard");
+    const saved = state.activeSession;
+    if (!saved || !Array.isArray(saved.queueIds) || !saved.queueIds.length) {
+      card.classList.add("hidden");
+      return;
+    }
+    const total = saved.queueIds.length;
+    const position = Math.min(Number(saved.index || 0) + 1, total);
+    $("#resumeMeta").textContent = `Sessão ${modeLabel(saved.mode)} · carta ${position} de ${total}`;
+    card.classList.remove("hidden");
+  }
+
   function updateHome() {
     const count = selectedKanjis().length;
-    $("#selectionSummary").textContent = `${count} de ${data.kanjis.length} kanjis selecionados`;
+    $("#selectionSummary").textContent = `${count} kanjis selecionados`;
+    $("#selectionCount").textContent = count;
     $("#statAnswered").textContent = state.stats.answered;
     $("#statCorrect").textContent = state.stats.correct;
     $("#statAccuracy").textContent = state.stats.answered ? `${Math.round(state.stats.correct / state.stats.answered * 100)}%` : "—";
+    updateResumeCard();
 
     document.querySelectorAll(".mode-card").forEach(button => {
       const mode = button.dataset.mode;
@@ -94,6 +132,30 @@
       revealed: false,
       resolved: false
     };
+    saveSessionSnapshot();
+    showView("gameView");
+    renderQuestion();
+  }
+
+  function continueSavedSession() {
+    const saved = state.activeSession;
+    if (!saved || !Array.isArray(saved.queueIds)) return;
+    const queue = saved.queueIds.map(id => byId.get(id)).filter(Boolean);
+    if (!queue.length) {
+      state.activeSession = null;
+      persist();
+      updateHome();
+      return;
+    }
+    session = {
+      mode: saved.mode,
+      queue,
+      index: Math.min(Number(saved.index || 0), queue.length - 1),
+      correct: Number(saved.correct || 0),
+      answered: Number(saved.answered || 0),
+      revealed: false,
+      resolved: false
+    };
     showView("gameView");
     renderQuestion();
   }
@@ -104,6 +166,7 @@
     const item = currentItem();
     session.revealed = false;
     session.resolved = false;
+    saveSessionSnapshot();
     $("#currentKanji").textContent = item.kanji;
     $("#currentMeta").textContent = `${item.book === "np1" ? "New Progressive 1" : "New Progressive 2"} · 漢字 ${item.chapter}`;
     $("#answerInput").value = "";
@@ -125,15 +188,9 @@
     const isVariant = /[～〜]/.test(displayReading);
     const hasOkurigana = /[（(]/.test(displayReading);
 
-    if (isVariant) {
-      return `Variação fonética usada em compostos ou contagens · ${item.meanings.join(" · ")}`;
-    }
-    if (isOnyomi) {
-      return `On'yomi · comum em palavras compostas · ${item.meanings.join(" · ")}`;
-    }
-    if (hasOkurigana) {
-      return `Kun'yomi · usada com okurigana · ${item.meanings.join(" · ")}`;
-    }
+    if (isVariant) return `Variação fonética usada em compostos ou contagens · ${item.meanings.join(" · ")}`;
+    if (isOnyomi) return `On'yomi · comum em palavras compostas · ${item.meanings.join(" · ")}`;
+    if (hasOkurigana) return `Kun'yomi · usada com okurigana · ${item.meanings.join(" · ")}`;
     return `Kun'yomi · leitura japonesa nativa · ${item.meanings.join(" · ")}`;
   }
 
@@ -180,7 +237,7 @@
         state.stats.correct += 1;
       }
       state.stats.answered += 1;
-      persist();
+      saveSessionSnapshot({ nextIndex: session.index + 1 });
       $("#feedback").className = "feedback good";
       showAnswer(item, session.revealed ? "Correto. Agora ficou!" : "Correto!");
       $("#answerInput").disabled = true;
@@ -221,6 +278,8 @@
   }
 
   function finishSession() {
+    state.activeSession = null;
+    persist();
     $("#resultCorrect").textContent = session.correct;
     $("#resultTotal").textContent = `/ ${session.answered}`;
     const accuracy = session.answered ? Math.round(session.correct / session.answered * 100) : 0;
@@ -238,6 +297,7 @@
   $("#backFromSelection").addEventListener("click", () => { updateHome(); showView("homeView"); });
   $("#selectAll").addEventListener("click", () => { state.selectedIds = data.kanjis.map(item => item.id); persist(); renderSelection(); updateHome(); });
   $("#restoreDefaults").addEventListener("click", () => { state.selectedIds = data.defaultSelectedIds.slice(); persist(); renderSelection(); updateHome(); });
+  $("#continueTraining").addEventListener("click", continueSavedSession);
   document.querySelectorAll(".mode-card").forEach(button => button.addEventListener("click", () => startSession(button.dataset.mode)));
   $("#exitGame").addEventListener("click", () => { session = null; updateHome(); showView("homeView"); });
   $("#answerForm").addEventListener("submit", event => { event.preventDefault(); submitAnswer(); });
